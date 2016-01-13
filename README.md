@@ -20,7 +20,7 @@ This is built differently from the official release, and contains some experimen
 - **F7**: _Step Over_, or skip past, a function call
 - **F8 / Tab**: _Step Into_ a function call
 - **F9 / Enter**: _Run To_ the highlighted line (Note: triggers only if the exact line becomes active) 
-- **~~F10~~ / Space**: _Toggle B.P._ sets or removes a breakpoint for the highlighted line
+- **~~F10~~ / Space**: _Toggle Breakpoint_ for the highlighted line
 - **F11**: Open the _Action Menu_ to access less-essential operations, including:
   - Breaking into VS Debugger (for debugging Trans3)
   - Dumping all canvas contents to PNG
@@ -47,6 +47,7 @@ This is built differently from the official release, and contains some experimen
 MuMu does not display by default. You control its operation using literal directives. These are just normal quoted strings in your program, e.g.:
 
 ```
+"mumu.watch:foo";
 debugger("Not yet...");
 "mumu.pause";
 debugger("Here we are!");
@@ -67,4 +68,6 @@ There are currently five directives:
 ##Known Issues
 - Terminating certain statements with a newline instead of a semicolon causes line number to be off by one.
 - Reference parameters do not display.
-- Inline functions
+- Parameters of inherited methods do not display.
+- Inline functions / RPGCode()
+- Variable browser: Identically-named variables of different scope should display their own value.

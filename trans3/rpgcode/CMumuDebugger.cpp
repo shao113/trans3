@@ -2,8 +2,6 @@
 
 /*
 	TODO:
-		Reference parameters: m_calls[].refs
-		Parameters of inherited methods: need to check inherits when finding methodIdx
 		RPGCode() / inline
 
 		Limit Cache size
@@ -337,7 +335,8 @@ STRING CMumuDebugger::VariableParser::parseVariable(bool isKey, STRING objPrefix
 
 LPSTACK_FRAME CMumuDebugger::VariableParser::resolveToVariable(const STRING &formattedName) const
 {
-	// TODO: references, ...
+	// TODO: Getting kind of unwieldy. Consider breaking this into smaller methods. This would also
+	//       make it easier to implement explicit scope resolution later on.
 	// TODO: check only globals when x::y format?
 	std::list<std::map<STRING, STACK_FRAME> > *pLocalList = m_program.getLocals();
 
@@ -347,18 +346,32 @@ LPSTACK_FRAME CMumuDebugger::VariableParser::resolveToVariable(const STRING &for
 		const int methodIdx = m_program.m_calls.back().methodIdx;
 		if (methodIdx >= 0 && methodIdx < m_program.m_methods.size())
 		{
-			const tagNamedMethod &method = m_program.getMethod(methodIdx);
+			const NAMED_METHOD &method = m_program.getMethod(methodIdx);
 			std::map<STRING, STRING>::const_iterator res = method.paramNames.find(formattedName);
-			
+
 			if (res != method.paramNames.end())
 			{
-				// Search locals for the internal parameter name:
+				// Name exists in parameter list; Search locals for its internal parameter name:
+				const STRING &internalName = res->second;
 				std::map<STRING, STACK_FRAME> &locals = pLocalList->back();
-				std::map<STRING, STACK_FRAME>::iterator resLocal = locals.find(res->second);
-				if (resLocal != locals.end())
+				std::map<STRING, STACK_FRAME>::iterator local_it = locals.find(internalName);
+				if (local_it != locals.end())
 				{
-					return &resLocal->second;
+					// Normal parameter.
+					return &local_it->second;
 				}
+				else if (internalName.length() == 2 && internalName[0] == _T(' '))
+				{
+					// Not in locals; See if it's a reference:
+					unsigned int idx = static_cast<unsigned int>(internalName[1]);
+					REFERENCE_MAP &refs = m_program.m_calls.back().refs;
+					REFERENCE_MAP::iterator ref_it = refs.find(idx);
+					if (ref_it != refs.end())
+					{
+						return ref_it->second.first;
+					}
+				}
+				assert(false && "Unexpected: Could not locate parameter.");
 			}
 		}
 	}
@@ -838,19 +851,26 @@ bool CMumuDebugger::isOverloadedOp(CONST_POS mu)
 		if (lhs->getType() & UDT_OBJ)
 		{
 			// Locate class.
-			const unsigned int obj = static_cast<unsigned int>(lhs->getNum());
-			const STRING &type = CProgram::m_objects[obj];
-			std::map<STRING, tagClass>::iterator k = m_program.m_classes.find(type);
-			if (k == m_program.m_classes.end())
+			std::map<unsigned int, STRING>::const_iterator obj_it =
+				CProgram::m_objects.find(static_cast<unsigned int>(lhs->getNum()));
+			if (obj_it == CProgram::m_objects.end())
+			{
+				return false;
+			}
+
+			const STRING &className = obj_it->second;
+			std::map<STRING, CLASS>::iterator cls_it = m_program.m_classes.find(className);
+			if (cls_it == m_program.m_classes.end())
 			{
 				return false;
 			}
 
 			// Check if class overloads the specified operator.
 			const STRING method = _T("operator") + s_overloadableOps[mu->func];
-			const CLASS_VISIBILITY cv = (m_program.m_calls.size() && 
-				(CProgram::m_objects[m_program.m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
-			if (k->second.locate(method, mu->params - 1, cv))
+			const CLASS_VISIBILITY cv = (m_program.m_calls.size() &&
+				CProgram::m_objects.count(m_program.m_calls.back().obj) &&
+				CProgram::m_objects[m_program.m_calls.back().obj] == className) ? CV_PRIVATE : CV_PUBLIC;
+			if (cls_it->second.locate(method, mu->params - 1, cv))
 			{
 				return true;
 			}
@@ -1127,7 +1147,7 @@ void CMumuDebugger::mUnitsPanel_populateRow(MACHINE_UNITS::size_type idx,
 	dimmed[2] = !(mu.udt & UDT_NUM) && !(mu.udt & UDT_CLOSE) && !(mu.udt & UDT_OPEN);
 
 	cells[3] = getShortUnitDataType(mu.udt);
-	cells[4] = CProgram::getFunctionName(mu.func);
+	cells[4] = mu.func ? CProgram::getFunctionName(mu.func) : STRING();
 
 	_itoa_s(mu.params, buf, 12, 10);
 	cells[5] = buf;
@@ -1987,6 +2007,10 @@ void CMumuDebugger::processDirective(const STRING &cmd)
 	{
 		// Customize style (somewhat)
 		processStyleDirective(s);
+	}
+	else
+	{
+		showMessage("Unknown MuMu Directive: " + cmd);
 	}
 }
 

@@ -34,7 +34,7 @@ typedef std::basic_stringstream<TCHAR> STRINGSTREAM;
 
 // Get an ASCII string.
 template <class T>
-inline std::string getAsciiString(const std::basic_string<T> istr)
+inline std::string getAsciiString(const std::basic_string<T> &istr)
 {
 #ifdef _UNICODE
 	const int length = istr.length() + 1;
@@ -50,7 +50,7 @@ inline std::string getAsciiString(const std::basic_string<T> istr)
 
 // Get a UNICODE string.
 template <class T>
-inline std::wstring getUnicodeString(const std::basic_string<T> istr)
+inline std::wstring getUnicodeString(const std::basic_string<T> &istr)
 {
 #ifndef _UNICODE
 	wchar_t *str = new wchar_t[istr.length() + 1];
@@ -83,7 +83,7 @@ inline STRING getString(const BSTR bstr)
 #endif
 }
 
-inline BSTR getString(const STRING rhs)
+inline BSTR getString(const STRING &rhs)
 {
 #ifndef _UNICODE
 	wchar_t *str = new wchar_t[rhs.length() + 1];

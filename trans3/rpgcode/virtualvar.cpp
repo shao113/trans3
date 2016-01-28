@@ -40,41 +40,12 @@
 // These classes cannot have any of their own members, as their
 // deconstructors are never called.
 
-// Virtual numerical variable.
-class CVirtualNum : public tagStackFrame
-{
-public:
-	double getNum() const { return *getPtr(); }
-	STRING getLit() const;
-	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
-
-private:
-	double *getPtr() const { return (double *)tag; }
-};
-
-// Virtual literal variable.
-class CVirtualLit : public tagStackFrame
-{
-public:
-	double getNum() const { return atof(getPtr()->c_str()); }
-	STRING getLit() const { return *getPtr(); }
-	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
-
-private:
-	STRING *getPtr() const { return (STRING *)tag; }
-};
-
 inline STRING getLit(const double num)
 {
 	// Just cast the number to a string.
 	std::stringstream ss;
 	ss << num;
 	return ss.str();
-}
-
-STRING CVirtualNum::getLit() const
-{
-	return ::getLit(*getPtr());
 }
 
 // <layer, <x, y>>
@@ -101,8 +72,8 @@ std::pair<int, std::pair<int, int> > getPlayerLocation(int tag)
 class CPlayerLocationX : public tagStackFrame
 {
 public:
-	CPlayerLocationX(int idx) { tag = (void *)idx; }
-	double getNum() const { return getPlayerLocation(int(tag)).second.first; }
+	CPlayerLocationX(int idx) { num = idx; }
+	double getNum() const { return getPlayerLocation(static_cast<int>(num)).second.first; }
 	STRING getLit() const { return ::getLit(getNum()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
@@ -111,8 +82,8 @@ public:
 class CPlayerLocationY : public tagStackFrame
 {
 public:
-	CPlayerLocationY(int idx) { tag = (void *)idx; }
-	double getNum() const { return getPlayerLocation(int(tag)).second.second; }
+	CPlayerLocationY(int idx) { num = idx; }
+	double getNum() const { return getPlayerLocation(static_cast<int>(num)).second.second; }
 	STRING getLit() const { return ::getLit(getNum()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
@@ -121,8 +92,8 @@ public:
 class CPlayerLocationZ : public tagStackFrame
 {
 public:
-	CPlayerLocationZ(int idx) { tag = (void *)idx; }
-	double getNum() const { return getPlayerLocation(int(tag)).first; }
+	CPlayerLocationZ(int idx) { num = idx; }
+	double getNum() const { return getPlayerLocation(static_cast<int>(num)).first; }
 	STRING getLit() const { return ::getLit(getNum()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
@@ -131,12 +102,12 @@ public:
 class CPlayerHandle : public tagStackFrame
 {
 public:
-	CPlayerHandle(int idx) { tag = (void *)idx; }
+	CPlayerHandle(int idx) { num = idx; }
 	double getNum() const { return atof(getLit().c_str()); }
 	STRING getLit() const
 	{
 		extern std::vector<CPlayer *> g_players;
-		int idx = int(tag);
+		int idx = static_cast<int>(num);
 		return (idx >= 0 && idx < g_players.size()) ?
 			g_players[idx]->name() : STRING();
 	}
@@ -173,11 +144,11 @@ public:
 class CBoardTitle : public tagStackFrame
 {
 public:
-	CBoardTitle(int idx) { tag = (void *)idx; }
+	CBoardTitle(int idx) { num = idx; }
 	STRING getLit() const
 	{
 		extern LPBOARD g_pBoard;
-		int idx = int(tag);
+		int idx = static_cast<int>(num);
 		return (idx >= 0 && idx < g_pBoard->layerTitles.size()) ?
 			g_pBoard->layerTitles[idx] : STRING();
 	}
@@ -189,11 +160,11 @@ public:
 class CBoardConstant : public tagStackFrame
 {
 public:
-	CBoardConstant(int idx) { tag = (void *)idx; }
+	CBoardConstant(int idx) { num = idx; }
 	STRING getLit() const
 	{
 		extern LPBOARD g_pBoard;
-		int idx = int(tag);
+		int idx = static_cast<int>(num);
 		return (idx >= 0 && idx < g_pBoard->constants.size()) ?
 			g_pBoard->constants[idx] : STRING();
 	}
@@ -239,26 +210,6 @@ public:
 	STRING getLit() const { return ::getLit(getNum()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
-
-/*
- * Set a virtual numerical variable.
- */
-void setVirtualNum(const STRING name, double *pNum)
-{
-	CPtrData<STACK_FRAME> &pFrame = CProgram::getGlobal(name);
-	pFrame = new CVirtualNum();
-	pFrame->tag = pNum;
-}
-
-/*
- * Set a virtual literal variable.
- */
-void setVirtualLit(const STRING name, STRING *pLit)
-{
-	CPtrData<STACK_FRAME> &pFrame = CProgram::getGlobal(name);
-	pFrame = new CVirtualLit();
-	pFrame->tag = pLit;
-}
 
 /*
  * Initialise virtual variables.

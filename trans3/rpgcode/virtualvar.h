@@ -36,16 +36,6 @@
 #include "../../tkCommon/strings.h"
 
 /*
- * Create a virtual numerical variable.
- */
-void setVirtualNum(const STRING name, double *pNum);
-
-/*
- * Create a virtual literal variable.
- */
-void setVirtualLit(const STRING name, STRING *pNum);
-
-/*
  * Create the initial virtual variables.
  */
 void initVirtualVars();

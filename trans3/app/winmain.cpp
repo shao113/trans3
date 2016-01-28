@@ -554,16 +554,22 @@ STRING getMainFileName(const STRING cmdLine)
 
 	if (CFile::fileExists(GAM_PATH + mainGam)) return GAM_PATH + mainGam;
 
+	TCHAR absolutePath[MAX_PATH];
+	bool useAbsolutePath = (_fullpath(absolutePath, GAM_PATH, MAX_PATH - 5) != NULL);
+
 	TCHAR strFileName[MAX_PATH] = _T("");
 
-	TCHAR absolutePath[MAX_PATH];
-	bool useAbsolutePath = (_fullpath(absolutePath, GAM_PATH, MAX_PATH) != NULL);
+	if (useAbsolutePath)
+	{
+		strcpy(strFileName, absolutePath);
+		strcat(strFileName, "*.gam");
+	}
 
 	OPENFILENAME ofn = {
 		sizeof(OPENFILENAME),
 		NULL,
 		g_hInstance,
-		_T("Supported Files\0*.gam;*.tpk\0RPG Toolkit Main File (*.gam)\0*.gam\0RPG Toolkit PakFile (*.tpk)\0*.tpk\0All files(*.*)\0*.*"),
+		_T("Supported Files\0*.gam;*.tpk\0RPG Toolkit Main File (*.gam)\0*.gam\0RPG Toolkit PakFile (*.tpk)\0*.tpk\0All files(*.*)\0*.*\0\0"),
 		NULL, 0, 1,
 		strFileName, MAX_PATH,
 		NULL, 0,

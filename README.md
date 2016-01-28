@@ -1,21 +1,21 @@
 # Trans3 with MuMu Debugger
 
-##Overview
+## Overview
 This modified version of Trans3 (v3.2.1) implements a basic [visual debugger](https://en.wikipedia.org/wiki/Debugger) for RPGCode. This enables you to visualize the execution of an RPGCode program by jumping between breakpoints, or walking through it one step at a time.
 
 This is built differently from the official release, and contains some experimental changes, which may lead to unexpected behavior. Please, **back up your project before using this build!**
 
 **This is a work in progress!**
 
-##Features
+## Features
 - Examine the active Machine Units, the internal representation of an RPGCode program
 - Assign watches with variable explorer
 - Watch up to 9 variables at a time
 - Dump variables, canvases, and machine units to disk
 
-##Interface / Controls
+## Interface / Controls
 - **F1 – F4** are reserved for unfinished features.
-- **F5**: _Run_ until next the breakpoint
+- **F5**: _Run_ until the next breakpoint
 - **F6**: _Step Out_ of the currently running function
 - **F7**: _Step Over_, or skip past, a function call
 - **F8 / Tab**: _Step Into_ a function call
@@ -37,13 +37,13 @@ This is built differently from the official release, and contains some experimen
   - Type `->` after an object name to search its member variables.
   - You can use either single- or double-quotes when specifying literal keys.
 
-####Variable Explorer Controls:
+#### Variable Explorer Controls:
   - **Tab** selects the first suggestion.
   - **Enter** assigns the watch.
   - **Delete** clears the selected slot.
   - **Escape** cancels, discarding any changes.
 
-##MuMu Directives
+## MuMu Directives
 MuMu does not display by default. You control its operation using literal directives. These are just normal quoted strings in your program, e.g.:
 
 ```
@@ -65,9 +65,7 @@ There are currently five directives:
 - `mumu.disable` will hide the debugger for the remainder of the current program, and then “detach” from future programs (until Trans3 is restarted.)
 - `mumu.style` allows (some) customization of the interface.
 
-##Known Issues
+## Known Issues
 - Terminating certain statements with a newline instead of a semicolon causes line number to be off by one.
-- Reference parameters do not display.
-- Parameters of inherited methods do not display.
 - Inline functions / RPGCode()
 - Variable browser: Identically-named variables of different scope should display their own value.

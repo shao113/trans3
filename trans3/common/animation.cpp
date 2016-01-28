@@ -227,14 +227,14 @@ void tagAnimation::loadFromGif(const STRING file)
  * Draw a picture.
  */
 
-void drawImage(const STRING strFile, CCanvas *const cnv, const int x, const int y, const int width, const int height)
+void drawImage(const STRING &strFile, CCanvas *const cnv, const int x, const int y, const int width, const int height)
 {
 	const HDC hdc = cnv->OpenDC();
 	drawImage(strFile, hdc, x, y, width, height);
 	cnv->CloseDC(hdc);
 }
 
-void drawImage(const STRING strFile, const HDC hdc, const int x, const int y, const int width, const int height)
+void drawImage(const STRING &strFile, const HDC hdc, const int x, const int y, const int width, const int height)
 {
 	if (_strcmpi(getExtension(strFile).c_str(), _T("TBM")) == 0)
 	{

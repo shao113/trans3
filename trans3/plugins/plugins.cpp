@@ -429,13 +429,25 @@ void freePluginSystem()
  * Default constructor.
  */
 CComPlugin::CComPlugin()
+:	m_plugin(NULL)
 {
-	m_plugin = NULL;
+	std::fill(m_members, m_members + MEMBER_COUNT, 0);
 }
 
 COldPlugin::COldPlugin()
+:	m_hModule(NULL),
+	m_plugBegin(NULL),
+	m_plugQuery(NULL),
+	m_plugExecute(NULL),
+	m_plugEnd(NULL),
+	m_plugType(NULL),
+	m_plugMenu(NULL),
+	m_plugFight(NULL),
+	m_plugFightInform(NULL), 
+	m_plugInputRequested(NULL),
+	m_plugEventInform(NULL)
 {
-	m_hModule = NULL;
+	//
 }
 
 /*
@@ -444,14 +456,25 @@ COldPlugin::COldPlugin()
  * cls (in) - class ID to construct
  */
 CComPlugin::CComPlugin(ITypeInfo *pTypeInfo)
+:	m_plugin(NULL)
 {
-	m_plugin = NULL;
+	std::fill(m_members, m_members + MEMBER_COUNT, 0);
 	load(pTypeInfo);
 }
 
 COldPlugin::COldPlugin(const STRING file)
+:	m_hModule(NULL),
+	m_plugBegin(NULL),
+	m_plugQuery(NULL),
+	m_plugExecute(NULL),
+	m_plugEnd(NULL),
+	m_plugType(NULL),
+	m_plugMenu(NULL),
+	m_plugFight(NULL),
+	m_plugFightInform(NULL), 
+	m_plugInputRequested(NULL),
+	m_plugEventInform(NULL)
 {
-	m_hModule = NULL;
 	load(file);
 }
 

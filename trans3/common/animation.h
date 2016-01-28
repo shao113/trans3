@@ -67,22 +67,8 @@ typedef struct tagAnimation
 
 } ANIMATION, *LPANIMATION;
 
-/*
- * One frame of an animation.
- */
-typedef struct tagAnimationFrame
-{
-	tagAnimationFrame(void): cnv(NULL) { }
-	CCanvas *cnv;					// Canvas of frame.
-	STRING file;					// Animation filename.
-	int frame;							// Frame number.
-	int maxFrames;						// Max frames in this anim.
-	STRING strSound;				// Sound played on this frame.
-} ANIMATION_FRAME;
+void drawImage(const STRING &strFile, const HDC hdc, const int x, const int y, const int width, const int height);
 
-
-void drawImage(const STRING strFile, const HDC hdc, const int x, const int y, const int width, const int height);
-
-void drawImage(const STRING strFile, CCanvas *const cnv, const int x, const int y, const int width, const int height);
+void drawImage(const STRING &strFile, CCanvas *const cnv, const int x, const int y, const int width, const int height);
 
 #endif

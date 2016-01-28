@@ -105,7 +105,7 @@ typedef struct tagStackFrame
 	STRING lit;
 	UNIT_DATA_TYPE udt;
 	CProgram *prg;
-	void *tag;
+	//void *tag;
 
 	bool getBool() const;
 	tagStackFrame getValue() const;
@@ -116,6 +116,7 @@ typedef struct tagStackFrame
 	virtual UNIT_DATA_TYPE getType() const;
 
 	tagStackFrame():
+		prg(NULL),
 		num(0.0),
 		udt(UNIT_DATA_TYPE(UDT_NUM | UDT_UNSET)) { }
 	tagStackFrame(CProgram *prg):
@@ -187,7 +188,11 @@ typedef struct tagMachineUnit
 	int params;
 #ifdef ENABLE_MUMU_DBG
 	int line, fileIndex;
-	tagMachineUnit(): line(g_lines), fileIndex(g_mumuProgramIdx) {}
+	tagMachineUnit()
+		: num(0.0), udt(UDT_UNSET), func(NULL), params(0), line(g_lines), fileIndex(g_mumuProgramIdx) { }
+#else
+	tagMachineUnit()
+		: num(0.0), udt(UDT_UNSET), func(NULL), params(0) { }
 #endif
 
 	void show() const;
@@ -426,7 +431,7 @@ public:
 
 	bool open(const STRING fileName);
 	bool loadFromString(const STRING &str);
-	void save(const STRING fileName) const;
+	//void save(const STRING fileName) const;
 	STACK_FRAME run();
 	unsigned int getLine(CONST_POS i) const;
 	void freeObject(unsigned int obj);
@@ -568,7 +573,7 @@ private:
 	void handleError(CException *);
 	bool isReady(void) const { return !m_units.empty(); }
 	int findMethod(const STRING &name, int params = -1);
-	tagNamedMethod& getMethod(int idx);
+	NAMED_METHOD& getMethod(int idx);
 
 	// Update curly brace pairs and method locations. Should be called
 	// after new code is injected into the program to prevent errors.

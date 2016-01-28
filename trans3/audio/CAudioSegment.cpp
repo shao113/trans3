@@ -96,7 +96,6 @@ bool CAudioSegment::open(const STRING file)
 	// If MDI file, use MCI functions
 	if (ext == "MID")
 	{
-
 		if (openMIDI(file))
 		{
 			m_audiere = false;
@@ -108,7 +107,7 @@ bool CAudioSegment::open(const STRING file)
 		return false;
 	}
 	else
-	{		
+	{
 		if (m_outputStream = audiere::OpenSound(m_device, getAsciiString(resolve(g_projectPath + MEDIA_PATH + file)).c_str(), true))
 		{
 			m_audiere = true;
@@ -231,6 +230,8 @@ void CAudioSegment::init(STRING handle)
 	HRESULT result;
 	
 	m_handle = handle;
+	m_volume = 100;
+	m_mciErr[0] = '\0';
 	m_mciErrLen = sizeof(m_mciErr);
 	m_audiere = false;
 	m_mci = false;

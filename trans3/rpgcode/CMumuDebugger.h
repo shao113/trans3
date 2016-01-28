@@ -79,7 +79,7 @@ private:
 		STRING parse(const STRING &var, bool forced = false);
 
 		// Gets the value of a parsed variable within current context, parsing if not already done.
-		// Precedence is the same as resolveToVariable(): Params, Locals, Members, Globals; (Refs TBD)
+		// Precedence is the same as resolveToVariable(): Params/Refs, Locals, Members, Globals;
 		//
 		// Omit /var/ to resolve the last parsed value. 
 		// /refresh/ forces re-evaluation; /verbose/ formats the result according to type
@@ -100,7 +100,7 @@ private:
 		STRING parseIdentifier();
 		STRING parseVariable(bool isKey = false, STRING objPrefix = STRING());
 
-		// Resolve a variable within current context. Precedence: Params, Locals, Members, Globals; (Refs TBD)
+		// Resolve a variable within current context. Precedence: Params/Refs, Locals, Members, Globals;
 		LPSTACK_FRAME resolveToVariable(const STRING &formattedName) const;
 		STRING resolveToString(const STRING &formattedName, bool verbose = false) const;
 		STRING resolveToVerboseString(const STRING &formattedName) const;
